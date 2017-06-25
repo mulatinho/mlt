@@ -1,4 +1,4 @@
-# MLT Mulato Layer Test
+# MLT (Mulato Layer Test)
 
 A extreme KISS (Keep It Simple Stupid) solution to test your software in C/C++
 
@@ -14,11 +14,7 @@ Here are some examples:
 	tests/example1.c:	mlt_assert(z == 42);
 	tests/example1.c:	mlt_strneq(strone,"yourp4ssw0rd");
 	tests/example1.c:	mlt_streq(strtwo,"yourp4ssw0rd");
-	tests/example1.c:	mlt_finish();
-	tests/example1.c:	return mlt_result;
 	tests/example2.c:	mlt_assert(!unit_series_tests());
-	tests/example2.c:	mlt_finish();
-	tests/example2.c:	return mlt_result;
 
 # build examples
 $ make
