@@ -1,0 +1,9 @@
+#!/usr/bin/env expect
+set timeout 2500
+set arg1 [lindex $argv 0 ];
+set arg2 [lindex $argv 1 ];
+
+spawn ./interactive-test $arg1 >/dev/null 2>&1 
+expect "str: "
+send "$arg2\r"
+expect eof
