@@ -18,6 +18,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
+#include <time.h>
+#include <sys/time.h>
 
 #ifndef __MASSERT_H
 #define __MASSERT_H 1
@@ -26,20 +28,39 @@ int mlt_rsuccess = 0;
 int mlt_rtests = 0;
 int mlt_result = 0;
 
+struct timeval mlt_init_t, mlt_subinit_t, mlt_end_t, mlt_subend_t;
+
+#define mlt_time_calc(end, ini) (((end.tv_sec - ini.tv_sec) * 1000000UL + end.tv_usec) - ini.tv_usec) / 1000000.0
+
+#define mlt_start() do { \
+	gettimeofday(&mlt_init_t, NULL); \
+	fprintf(stdout, ":. Starting test(s) on '%s' at %s", __FILE__, ctime((const time_t *) &mlt_init_t.tv_sec)); \
+	mlt_rsuccess = 0; mlt_rtests = 0; mlt_result = 0; } while(0)
+
 #define mlt_finish() do { \
-	mlt_result = mlt_rtests - mlt_rsuccess; if (!(mlt_result)) printf("\nResult: PASSED, Filename: '%s'\n", __FILE__); \
-	else printf("\nResult: FAILED, Filename: '%s'\n", __FILE__); \
-	printf("Tests run: %d, Tests PASSED: %d, Tests FAILED: %d\n\n", \
+	gettimeofday(&mlt_end_t, NULL); \
+	mlt_result = mlt_rtests - mlt_rsuccess; if (!(mlt_result)) printf("\n:. Result: PASSED, Time Elapsed: %.3fms, Filename: '%s'\n", mlt_time_calc(mlt_end_t, mlt_init_t), __FILE__); \
+	else printf("\n:. Result: FAILED, Time Elapsed: %.3fms, Filename: '%s'\n", \
+		mlt_time_calc(mlt_end_t, mlt_init_t), __FILE__); \
+	printf(":. Tests run: %d, Tests PASSED: %d, Tests FAILED: %d\n\n", \
 		mlt_rtests, mlt_rsuccess, (mlt_rtests-mlt_rsuccess)); } while(0)
 
 #define mlt_debug(res) \
 	printf("return %s in '%s' on function '%s()' line %d, test '%s'\n", \
 	res ? "success" : "error  ", __FILE__, __func__, __LINE__, __STRING(res))
 
+#define mlt_time_end() do { \
+	gettimeofday(&mlt_subend_t, NULL); \
+	printf("  elapsed time in '%s' on function '%s()', time: %.3fms\n", \
+		__FILE__, __func__, mlt_time_calc(mlt_subend_t, mlt_subinit_t)); } while(0)
+
 #define mlt_assert(test) do { \
 	if (test) { mlt_rsuccess++; } \
-       mlt_rtests++; mlt_debug(test); } while(0)
+	mlt_rtests++; mlt_debug(test); } while(0)
+
+#define mlt_time_init() gettimeofday(&mlt_subinit_t, NULL);
 
 #define mlt_streq(in, str) mlt_assert(strncmp(in, str, strlen(in)) == 0);
 #define mlt_strneq(in, str) mlt_assert(strncmp(in, str, strlen(in)));
+
 #endif
