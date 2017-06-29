@@ -1,5 +1,5 @@
 #!/usr/bin/env expect
-set timeout 2500
+set timeout 25
 set arg1 [lindex $argv 0 ];
 set arg2 [lindex $argv 1 ];
 
