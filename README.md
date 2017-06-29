@@ -12,6 +12,18 @@ You just need to put the header "mlt.h" and use our functions to test software.
 	$ vim yourtestfile.c 							# add include "mlt.h"
 	$ gcc -I $PWD/mlt/ -o yourtestfile yourtestfile.c && ./yourtestfile
 
+Or you can automate a series of test using our Makefile as template
+
+	$ cp $PWD/mlt/Makefile .
+	$ vim Makefile 									# substitute by your tests
+
+# Types of Test
+
+	- Simple instruction test,
+	- Time execution test,
+	- Input/Output comparision test,
+	- Interactive test.
+
 # Some examples
 
 	tests/example1.c:	mlt_assert(x == 1);
@@ -20,7 +32,7 @@ You just need to put the header "mlt.h" and use our functions to test software.
 	tests/example1.c:	mlt_streq(strtwo,"yourp4ssw0rd");
 	tests/example2.c:	mlt_assert(unit_series_tests() == 0);
 
-# build and execute examples
+# Build and execute examples
 
 	$ make && make test
 
