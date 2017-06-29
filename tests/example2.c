@@ -1,3 +1,4 @@
+#define DEBUG 1
 #include "mlt.h"
 
 int unit1(void) 
@@ -22,7 +23,9 @@ int unit_series_tests()
 
 int main(void)
 {
-	mlt_assert(!unit_series_tests());
+	mlt_start();
+
+	mlt_assert(unit_series_tests() == 0);
 
 	mlt_finish();
 

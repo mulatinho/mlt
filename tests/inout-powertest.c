@@ -1,15 +1,14 @@
 #include "mlt.h"
 #include <math.h>
 
-#define DEBUG 1
 
 double calc(double number, double n) 
 {
 	double sum = 0.0;
 
-	for (double x = 0.0; x < n; ++x) {
+	for (double x = 0.0; x < n; x++) {
 		sum += pow(number, x);
-		printf("%.2f ", sum);
+		printf("%.2f ", pow(number, x));
 	}
 	printf("\n");
 

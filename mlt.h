@@ -59,6 +59,7 @@ struct timeval mlt_init_t, mlt_subinit_t, mlt_end_t, mlt_subend_t;
 		printf(":. Tests run: %d, Tests PASSED: %d, Tests FAILED: %d\n\n", \
 			mlt_rtests, mlt_rsuccess, (mlt_rtests-mlt_rsuccess)); \
 	} \
+	return mlt_result; \
 	} while(0)
 
 #define mlt_debug(res) \
@@ -67,13 +68,13 @@ struct timeval mlt_init_t, mlt_subinit_t, mlt_end_t, mlt_subend_t;
 
 #define mlt_time_end() do { \
 	gettimeofday(&mlt_subend_t, NULL); \
-	printf("  elapsed time in '%s' on function '%s()', time: %.3fms\n", \
-		__FILE__, __func__, mlt_time_calc(mlt_subend_t, mlt_subinit_t)); \
+	if (MLT_LOG) { printf("  elapsed time in '%s' on function '%s()', time: %.3fms\n", \
+		__FILE__, __func__, mlt_time_calc(mlt_subend_t, mlt_subinit_t)); } \
 	} while(0)
 
 #define mlt_assert(test) do { \
 	if (test) { mlt_rsuccess++; } \
-	mlt_rtests++; mlt_debug(test); \
+	mlt_rtests++; if (MLT_LOG) { mlt_debug(test); } \
 	} while(0)
 
 #define mlt_time_init() gettimeofday(&mlt_subinit_t, NULL);
