@@ -6,6 +6,8 @@ int main(void)
 	char strone[] = "hello world";
 	char strtwo[] = "yourp4ssw0rd";
 
+	mlt_start();
+
 	x = 1; y = 10; z = 42;
 	mlt_assert(x == 1);
 	mlt_assert(z == 42);

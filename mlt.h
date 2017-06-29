@@ -21,8 +21,14 @@
 #include <time.h>
 #include <sys/time.h>
 
-#ifndef __MASSERT_H
-#define __MASSERT_H 1
+#ifndef __MLT_H
+#define __MLT_H 1
+
+#ifndef DEBUG
+#define MLT_LOG 0
+#else
+#define MLT_LOG 1
+#endif
 
 int mlt_rsuccess = 0;
 int mlt_rtests = 0;
@@ -35,21 +41,24 @@ struct timeval mlt_init_t, mlt_subinit_t, mlt_end_t, mlt_subend_t;
 
 #define mlt_start() do { \
 	gettimeofday(&mlt_init_t, NULL); \
-	fprintf(stdout, ":. Starting test(s) on '%s' at %s", \
-		__FILE__, ctime((const time_t *) &mlt_init_t.tv_sec)); \
+	if (MLT_LOG) \
+		fprintf(stdout, ":. Starting test(s) on '%s' at %s", \
+			__FILE__, ctime((const time_t *) &mlt_init_t.tv_sec)); \
 	mlt_rsuccess = 0; mlt_rtests = 0; mlt_result = 0; \
 	} while(0)
 
 #define mlt_finish() do { \
 	gettimeofday(&mlt_end_t, NULL); \
 	mlt_result = mlt_rtests - mlt_rsuccess; \
-	if (!(mlt_result)) \
-		printf("\n:. Result: PASSED, Time Elapsed: %.3fms, Filename: '%s'\n", \
-			mlt_time_calc(mlt_end_t, mlt_init_t), __FILE__); \
-	else printf("\n:. Result: FAILED, Time Elapsed: %.3fms, Filename: '%s'\n", \
-			mlt_time_calc(mlt_end_t, mlt_init_t), __FILE__); \
-	printf(":. Tests run: %d, Tests PASSED: %d, Tests FAILED: %d\n\n", \
-		mlt_rtests, mlt_rsuccess, (mlt_rtests-mlt_rsuccess)); \
+	if (MLT_LOG) { \
+		if (!(mlt_result)) \
+			printf("\n:. Result: PASSED, Time Elapsed: %.3fms, Filename: '%s'\n", \
+				mlt_time_calc(mlt_end_t, mlt_init_t), __FILE__); \
+		else printf("\n:. Result: FAILED, Time Elapsed: %.3fms, Filename: '%s'\n", \
+				mlt_time_calc(mlt_end_t, mlt_init_t), __FILE__); \
+		printf(":. Tests run: %d, Tests PASSED: %d, Tests FAILED: %d\n\n", \
+			mlt_rtests, mlt_rsuccess, (mlt_rtests-mlt_rsuccess)); \
+	} \
 	} while(0)
 
 #define mlt_debug(res) \
