@@ -3,7 +3,7 @@ set timeout 25
 set arg1 [lindex $argv 0 ];
 set arg2 [lindex $argv 1 ];
 
-spawn ./tests/interactive-test $arg1 >/dev/null 2>&1 
+spawn ./tests/interactive-test $arg1 ehlo
 expect "str: "
 send "$arg2\r"
 expect eof

@@ -42,7 +42,7 @@ struct timeval mlt_init_t, mlt_subinit_t, mlt_end_t, mlt_subend_t;
 #define mlt_start() do { \
 	gettimeofday(&mlt_init_t, NULL); \
 	if (MLT_LOG) \
-		fprintf(stdout, ":. Starting test(s) on '%s' at %s", \
+		fprintf(stdout, ":. Started test(s) on '%s' at %s", \
 			__FILE__, ctime((const time_t *) &mlt_init_t.tv_sec)); \
 	mlt_rsuccess = 0; mlt_rtests = 0; mlt_result = 0; \
 	} while(0)
