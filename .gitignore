@@ -3,3 +3,5 @@
 *.[oa]
 .*
 tests.log
+*.log
+*.out

@@ -6,16 +6,91 @@ If you like, please follow and share. Thanks for using Mulato Layer Test.
 
 # How to integrate with your code
 
-You just need to put the header "mlt.h" and use our functions to test software.
+You just need to put the header "mlt.h" and use our functions to test software. Here is an example using the [latency-test](github.com/mulatinho/latency-test) software
 
-	$ git clone https://github.com/mulatinho/mlt
-	$ vim yourtestfile.c 							# add include "mlt.h"
-	$ gcc -I $PWD/mlt/ -o yourtestfile yourtestfile.c && ./yourtestfile
+	$ mkdir tests && cd tests && git clone https://github.com/mulatinho/mlt
+	$ vim latency-test_test.c 							# add include "mlt.h"
 
-Or you can automate a series of test using our Makefile as template
+## Makefile
+Manual compile like the commands below or just add a target in your Makefile
+```sh
+test:
+	gcc -DMLT_TESTING=1 -Wall -g -ggdb -o src/latency-test.o -c src/latency-test.c ${CARGS} -I./tests/mlt
+	gcc -DMLT_TESTING=1 -Wall -g -ggdb -o tests/latency-test_test.o -c tests/latency-test_test.c ${CARGS} -I./tests/mlt
+	gcc -DMLT_TESTING=1 -Wall -g -ggdb -o tests/latency-test_test src/latency-test.o tests/latency-test_test.o ${CARGS} -I./tests/mlt
+```
 
-	$ cp $PWD/mlt/Makefile .
-	$ vim Makefile 									# substitute by your tests
+## latency-test_test.c
+
+```c
+#include "mlt.h"
+#include "../src/latency-test.h"
+
+void unit_test_get_ip(void)
+{
+        int BATTERY_INPUT = 0, BATTERY_OUTPUT = 1;
+        char *battery_test[][NAME_MAX] = {
+                { "localhost", "127.0.0.1" },
+                { "127.0.0.1", "127.0.0.1" },
+                { "dns.google", "8.8.8.8" },
+        };
+        int battery_size = sizeof(battery_test) / sizeof(battery_test[0]);
+
+        for (int battery = 0; battery < battery_size; battery++) {
+                char *result = latency_host_to_ip(battery_test[battery][BATTERY_INPUT]);
+                mlt_assert(result != NULL);
+                mlt_streq(result, battery_test[battery][BATTERY_OUTPUT]);
+        }
+
+        mlt_assert(latency_host_to_ip("sdadi.dwsf") == NULL);
+}
+
+int main(void)
+{
+    mlt_start();
+    unit_test_get_ip();
+    mlt_finish();
+}
+
+```
+
+## main.c
+
+add the macro `#ifndef MLT_TESTING` on your main function so when you compile your tests it will not call your main but rather the tests main.
+```c
+#include <stdio.h>
+
+#ifndef MLT_TESTING
+int main(int argc, char **argv) {
+	return 0;
+}
+#endif
+```
+
+## output
+
+```sh
+$ make test && ./tests/latency-test_test 
+:. Started test(s) on 'tests/latency-test_test.c' at Mon May 12 12:11:32 2025
+
+return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 27,
+test 'result != ((void *)0)'
+return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 28,
+test 'strncmp(result, battery_test[battery][BATTERY_OUTPUT], strlen(result)) == 0'
+return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 27,
+test 'result != ((void *)0)'
+return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 28,
+test 'strncmp(result, battery_test[battery][BATTERY_OUTPUT], strlen(result)) == 0'
+return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 27,
+test 'result != ((void *)0)'
+return error   in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 28,
+test 'strncmp(result, battery_test[battery][BATTERY_OUTPUT], strlen(result)) == 0'
+return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 31,
+test 'latency_host_to_ip("sdadi.dwsf") == ((void *)0)'
+
+:. Result: FAILED, Time Elapsed: 0.213ms, Filename: 'tests/latency-test_test.c'
+:. Tests run: 7, Tests PASSED: 6, Tests FAILED: 1
+```
 
 # Types of Test
 
@@ -24,7 +99,7 @@ Or you can automate a series of test using our Makefile as template
 	- Input/Output comparision test,
 	- Interactive test.
 
-# Some examples
+# Function assertion examples
 
 	tests/example1.c:	mlt_assert(x == 1);
 	tests/example1.c:	mlt_assert(z == 42);
@@ -32,7 +107,7 @@ Or you can automate a series of test using our Makefile as template
 	tests/example1.c:	mlt_streq(strtwo,"yourp4ssw0rd");
 	tests/example2.c:	mlt_assert(unit_series_tests() == 0);
 
-# Build and execute examples
+## Build and execute examples
 
 	$ make && make test
 
