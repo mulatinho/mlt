@@ -1,0 +1,37 @@
+name: release
+
+on:
+ workflow_call:
+    inputs:
+      version:
+        type: string
+        description: 'The version to release'
+        required: true
+ workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        description: 'The version to release'
+        required: true
+
+jobs:
+  publish:
+    runs-on: [ "ubuntu-latest" ]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: coursier/cache-action@v6.4
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        with:
+          driver: docker
+      - name: generate a release in github
+        run: |-
+          echo "$TOKEN" | gh auth login --with-token
+
+          docker pull mulatinho/mlt:$VERSION
+          docker run -d --name latency mulatinho/mlt make
+        
+          gh release create "$VERSION" --generate-notes './mlt.h#Linux C Header File'
+        env:
+          TOKEN: ${{ secrets.PAT_GITHUB }}
+          VERSION: ${{ inputs.version }}
