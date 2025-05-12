@@ -28,9 +28,6 @@ jobs:
         run: |-
           echo "$TOKEN" | gh auth login --with-token
 
-          docker pull mulatinho/mlt:$VERSION
-          docker run -d --name latency mulatinho/mlt make
-        
           gh release create "$VERSION" --generate-notes './mlt.h#Linux C Header File'
         env:
           TOKEN: ${{ secrets.PAT_GITHUB }}
