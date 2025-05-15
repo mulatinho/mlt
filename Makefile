@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS=-I ./ -W -O2
 LDLIBS=-lm
-TESTS=tests/example1 tests/example2
+TESTS=tests/example1 tests/example2 tests/suite
 ITESTS=tests/interactive-test
 DTESTS=tests/inout-powertest
 
@@ -12,16 +12,25 @@ test:
 		./$$test | tee -a $$test.log; \
 	done
 	@for test in $(ITESTS); do \
-		./$$test.exp 25 hello | tee -a $$test.log; \
+		./$$test.exp 12 hello | tee -a $$test.log; \
 	done
 	@for test in $(DTESTS); do \
-		(./$$test < $$test.in | grep -v ':.' > $$test.out && \
+		(./$$test < $$test.in | grep -v 'Starting test' > $$test.out && \
 			diff -q $$test.out $$test.chk && \
 			echo "result: succcess, '$$test.out' and '$$test.chk' are equals" || \
 			echo "result: fail,     '$$test.out' and '$$test.chk' are different.") | tee -a $$test.log; \
 	done
-	@egrep '^:.' tests/*.log | sed -e 's@.*:\. @@g' > tests.log
 
 clean:
-	@rm -fv $(TESTS) $(ITESTS) $(DTESTS) tests/*.{out,log} tests.log 
+	@rm -fv $(TESTS) $(ITESTS) $(DTESTS) 
+	@rm -fv tests/*.out
+	@rm -fv tests/*.log
 	@rm -rfv tests/*dSYM
+
+install:
+	install -m 0644 mlt.h /usr/local/include/
+	install -m 0644 doc/mlt.1 /usr/local/share/man/man1/
+
+uninstall:
+	rm -fv /usr/local/include/mlt.h
+	rm -fv /usr/local/share/man/man1/mlt.1
