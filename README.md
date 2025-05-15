@@ -1,140 +1,129 @@
 # MLT (Mulato Layer Test)
 
-A extreme KISS (Keep It Simple Stupid) solution to test your software in C/C++ with one header.
+A lightweight and simple testing framework for C/C++ programs with test suite support, timing measurements, and colorized output.
 
-If you like, please follow and share. Thanks for using Mulato Layer Test. 
+## Features
 
-# How to integrate with your code
+- Single header file integration
+- Organized test suites with timing measurements
+- Colorized output for better readability
+- Support for multiple test types:
+  - Unit tests with assertions
+  - String comparison tests
+  - Time execution measurements
+  - Interactive tests
+  - Input/Output comparison tests
 
-You just need to put the header "mlt.h" and use our functions to test software. Here is an example using the [latency-test](github.com/mulatinho/latency-test) software
+## Quick Start
 
-	$ mkdir tests && cd tests && git clone https://github.com/mulatinho/mlt
-	$ vim latency-test_test.c 							# add include "mlt.h"
-
-## Makefile
-Manual compile like the commands below or just add a target in your Makefile
-```sh
-test:
-	gcc -DMLT_TESTING=1 -Wall -g -ggdb -o src/latency-test.o -c src/latency-test.c ${CARGS} -I./tests/mlt
-	gcc -DMLT_TESTING=1 -Wall -g -ggdb -o tests/latency-test_test.o -c tests/latency-test_test.c ${CARGS} -I./tests/mlt
-	gcc -DMLT_TESTING=1 -Wall -g -ggdb -o tests/latency-test_test src/latency-test.o tests/latency-test_test.o ${CARGS} -I./tests/mlt
+1. Add the header to your project:
+```bash
+mkdir tests && cd tests && git clone https://github.com/mulatinho/mlt
 ```
 
-## latency-test_test.c
-
+2. Include the header in your test file:
 ```c
 #include "mlt.h"
-#include "../src/latency-test.h"
-
-void unit_test_get_ip(void)
-{
-        int BATTERY_INPUT = 0, BATTERY_OUTPUT = 1;
-        char *battery_test[][NAME_MAX] = {
-                { "localhost", "127.0.0.1" },
-                { "127.0.0.1", "127.0.0.1" },
-                { "dns.google", "8.8.8.8" },
-        };
-        int battery_size = sizeof(battery_test) / sizeof(battery_test[0]);
-
-        for (int battery = 0; battery < battery_size; battery++) {
-                char *result = latency_host_to_ip(battery_test[battery][BATTERY_INPUT]);
-                mlt_assert(result != NULL);
-                mlt_streq(result, battery_test[battery][BATTERY_OUTPUT]);
-        }
-
-        mlt_assert(latency_host_to_ip("sdadi.dwsf") == NULL);
-}
-
-int main(void)
-{
-    mlt_start();
-    unit_test_get_ip();
-    mlt_finish();
-}
-
 ```
 
-## main.c
-
-add the macro `#ifndef MLT_TESTING` on your main function so when you compile your tests it will not call your main but rather the tests main.
+3. Create your first test:
 ```c
-#include <stdio.h>
+#include "mlt.h"
 
+int main(void) {
+    mlt_start();
+
+    mlt_suite_begin("Basic Tests");
+    mlt_assert(2 + 2 == 4);
+    mlt_streq("hello", "hello");
+    mlt_suite_end();
+
+    mlt_finish();
+    return 0;
+}
+```
+
+## Test Suite Features
+
+- Organize related tests into suites
+- Each suite tracks:
+  - Number of tests run
+  - Number of tests passed/failed
+  - Execution time
+- Maximum 16 test suites per session
+- Suite names limited to 64 characters
+
+## Available Macros
+
+| Macro | Description |
+|-------|-------------|
+| `mlt_start()` | Initialize test session |
+| `mlt_finish()` | Complete session and show results |
+| `mlt_suite_begin(name)` | Start a new test suite |
+| `mlt_suite_end()` | Complete current suite |
+| `mlt_assert(test)` | Assert a condition is true |
+| `mlt_streq(in, str)` | Assert strings are equal |
+| `mlt_strneq(in, str)` | Assert strings are not equal |
+
+## Output Format
+
+Tests results are displayed with clear indicators:
+- `[ OK]` - Test passed (green)
+- `[ERR]` - Test failed (red)
+
+Example output:
+```
+:. Starting test session at Mon Apr 15 10:30:45 2024
+
+- Running suite: String Tests
+  [ OK] PASS in 'test_strings()' line 10: strlen("test") == 4
+  [ OK] PASS in 'test_strings()' line 11: strcmp(str1, str2) == 0
+
+=== Test Session Summary ===
+Total time elapsed: 0.001s
+
+Suite: String Tests
+  Tests: 2, Passed: 2, Failed: 0 (0.001s)
+
+=== Final Results ===
+PASSED: All tests completed successfully
+Total Tests: 2, Passed: 2, Failed: 0
+```
+
+## Integration with Your Code
+
+To prevent test code from being included in your main program, wrap your main function:
+
+```c
 #ifndef MLT_TESTING
 int main(int argc, char **argv) {
-	return 0;
+    // Your main program code
+    return 0;
 }
 #endif
 ```
 
-## output
+## Compilation
 
-```sh
-$ make test && ./tests/latency-test_test 
-:. Started test(s) on 'tests/latency-test_test.c' at Mon May 12 12:11:32 2025
-
-return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 27,
-test 'result != ((void *)0)'
-return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 28,
-test 'strncmp(result, battery_test[battery][BATTERY_OUTPUT], strlen(result)) == 0'
-return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 27,
-test 'result != ((void *)0)'
-return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 28,
-test 'strncmp(result, battery_test[battery][BATTERY_OUTPUT], strlen(result)) == 0'
-return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 27,
-test 'result != ((void *)0)'
-return error   in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 28,
-test 'strncmp(result, battery_test[battery][BATTERY_OUTPUT], strlen(result)) == 0'
-return success in 'tests/latency-test_test.c' on function 'unit_test_get_ip()' line 31,
-test 'latency_host_to_ip("sdadi.dwsf") == ((void *)0)'
-
-:. Result: FAILED, Time Elapsed: 0.213ms, Filename: 'tests/latency-test_test.c'
-:. Tests run: 7, Tests PASSED: 6, Tests FAILED: 1
+Add to your Makefile:
+```makefile
+test:
+    $(CC) -DMLT_TESTING=1 -Wall -I./tests/mlt -o test_program test_program.c
 ```
 
-# Types of Test
+## Documentation
 
-	- Simple instruction test,
-	- Time execution test,
-	- Input/Output comparision test,
-	- Interactive test.
+For detailed documentation, see the man page:
+```bash
+man ./doc/mlt.1
+```
 
-# Function assertion examples
+## License
 
-	tests/example1.c:	mlt_assert(x == 1);
-	tests/example1.c:	mlt_assert(z == 42);
-	tests/example1.c:	mlt_strneq(strone,"yourp4ssw0rd");
-	tests/example1.c:	mlt_streq(strtwo,"yourp4ssw0rd");
-	tests/example2.c:	mlt_assert(unit_series_tests() == 0);
+Copyright © 2015 Alexandre Mulatinho <alex@mulatinho.net>
 
-## Build and execute examples
+This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
 
-	$ make && make test
+## Contributing
 
-	:. Started test(s) on 'tests/example1.c' at Wed Jun 28 22:36:12 2017
-	return success in 'tests/example1.c' on function 'main()' line 13, test 'x == 1'
-	return success in 'tests/example1.c' on function 'main()' line 14, test 'z == 42'
-	return success in 'tests/example1.c' on function 'main()' line 15, test 'strncmp(strone, "yourp4ssw0rd", strlen(strone))'
-	return success in 'tests/example1.c' on function 'main()' line 16, test 'strncmp(strtwo, "yourp4ssw0rd", strlen(strtwo)) == 0'
-	
-	:. Result: PASSED, Time Elapsed: 0.001ms, Filename: 'tests/example1.c'
-	:. Tests run: 4, Tests PASSED: 4, Tests FAILED: 0
-	
-	:. Started test(s) on 'tests/example2.c' at Wed Jun 28 22:36:12 2017
-	return success in 'tests/example2.c' on function 'main()' line 28, test 'unit_series_tests() == 0'
-	
-	:. Result: PASSED, Time Elapsed: 0.001ms, Filename: 'tests/example2.c'
-	:. Tests run: 1, Tests PASSED: 1, Tests FAILED: 0
-	
-	spawn ./tests/interactive-test 2 ehlo
-	:. Started test(s) on 'tests/interactive-test.c' at Wed Jun 28 22:36:12 2017
-	  elapsed time in 'tests/interactive-test.c' on function 'random_int()', time: 0.001ms
-	str: hello
-	res: 14, str: 'hello'
-	return success in 'tests/interactive-test.c' on function 'main()' line 42, test 'res < 50'
-	return success in 'tests/interactive-test.c' on function 'main()' line 43, test 'strncmp(str, "hello", strlen(str)) == 0'
-	
-	:. Result: PASSED, Time Elapsed: 0.002ms, Filename: 'tests/interactive-test.c'
-	:. Tests run: 2, Tests PASSED: 2, Tests FAILED: 0
-	
-	result: succcess, 'tests/inout-powertest.out' and 'tests/inout-powertest.chk' are equals
+If you like MLT, please follow and share. Bug reports and pull requests are welcome on GitHub at https://github.com/mulatinho/mlt.
