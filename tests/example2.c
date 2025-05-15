@@ -1,4 +1,3 @@
-#define DEBUG 1
 #include "mlt.h"
 
 int unit1(void) 

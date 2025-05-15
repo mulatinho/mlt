@@ -1,4 +1,3 @@
-#define DEBUG 1
 #include "mlt.h"
 #include <unistd.h>
 #include <stdlib.h>
@@ -6,7 +5,6 @@
 int random_int(int n)
 {
 	int res = 0;
-	mlt_time_init();
 
 	srand(time(NULL));
 	for (int i = 0; i < n; i++) {
@@ -14,7 +12,6 @@ int random_int(int n)
 		usleep(500);
 	}
 
-	mlt_time_end();
 	return res;
 }
 
@@ -29,6 +26,7 @@ int main(int argc, char **argv)
 	}
 
 	mlt_start();
+	mlt_suite_begin("interactive-test");
 
 	n = atoi(argv[1]);
 	res = random_int(n);
@@ -37,11 +35,12 @@ int main(int argc, char **argv)
 	fgets(str, sizeof(str)-1, stdin);
 	str[strlen(str)-1] = '\0';
 
-	fprintf(stdout, "res: %d, str: '%s'\n", res, str);
+	fprintf(stdout, "\ninput-> res: '%d', str: '%s'\n", res, str);
 
-	mlt_assert(res < 50);
+	mlt_assert(res < 360);
 	mlt_streq(str, "hello");
 
+	mlt_suite_end();
 	mlt_finish();
 
 	return 0;

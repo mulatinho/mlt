@@ -1,5 +1,10 @@
-
-1.00 2.00 4.00 8.00 16.00 32.00 
+[0m1.00 2.00 4.00 8.00 16.00 32.00 
 63.00
 
+[1m=== Test Session Summary ===[0m
+Total time elapsed: 0.000s
+
+[1m=== Final Results ===[0m
+[32mPASSED[0m: All tests completed successfully
+Total Tests: 0, [32mPassed: 0[0m, [31mFailed: 0[0m
 
