@@ -1,0 +1,81 @@
+.TH MLT 1 "April 2024" "MLT Testing Framework" "User Commands"
+.SH NAME
+mlt \- A lightweight testing framework for C programs
+.SH SYNOPSIS
+.B #include <mlt.h>
+.PP
+.B cc
+.I program.c
+.B \-I/path/to/mlt
+.SH DESCRIPTION
+.B mlt
+is a simple and lightweight testing framework for C programs that provides test suite organization, timing measurements, and colorized output.
+.SH MACROS
+.TP
+.B mlt_start()
+Initialize the test session and print the start time.
+.TP
+.B mlt_finish()
+Complete the test session, print summary statistics and return the test result.
+.TP
+.B mlt_suite_begin(name)
+Start a new test suite with the given name. Maximum suite name length is 64 characters.
+.TP
+.B mlt_suite_end()
+Complete the current test suite and record its execution time.
+.TP
+.B mlt_assert(test)
+Assert that a test condition is true. Records success/failure and prints debug information.
+.TP
+.B mlt_streq(in, str)
+Assert that two strings are equal.
+.TP
+.B mlt_strneq(in, str)
+Assert that two strings are not equal.
+.SH OUTPUT FORMAT
+Test results are displayed with the following indicators:
+.TP
+.B [ OK]
+Test passed successfully (shown in green)
+.TP
+.B [ERR]
+Test failed (shown in red)
+.PP
+Each test suite's results include:
+.IP \[bu] 2
+Total number of tests run
+.IP \[bu]
+Number of tests passed
+.IP \[bu]
+Number of tests failed
+.IP \[bu]
+Execution time
+.SH EXAMPLE
+.nf
+#include <mlt.h>
+
+int main(void) {
+    mlt_start();
+
+    mlt_suite_begin("String Tests");
+    mlt_assert(strlen("test") == 4);
+    mlt_streq("hello", "hello");
+    mlt_suite_end();
+
+    mlt_finish();
+    return 0;
+}
+.fi
+.SH LIMITS
+.IP \[bu] 2
+Maximum number of test suites: 16
+.IP \[bu]
+Maximum suite name length: 64 characters
+.SH AUTHOR
+Written by Alexandre Mulatinho <alex@mulatinho.net>
+.SH BUGS
+Report bugs to https://github.com/mulatinho/mlt/issues
+.SH COPYRIGHT
+Copyright \(co 2015 Alexandre Mulatinho.
+.PP
+This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
