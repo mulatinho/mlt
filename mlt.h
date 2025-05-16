@@ -23,6 +23,7 @@
 
 #ifndef MLT_TESTING
 #define MLT_TESTING 1
+#endif
 
 /* ANSI Color codes */
 #define MLT_COLOR_RED     "\x1b[31m"
@@ -89,9 +90,6 @@ struct timeval mlt_init_t, mlt_subinit_t, mlt_end_t, mlt_subend_t;
 	return mlt_result; \
 	} while(0)
 
-//	BUFFER_INIT(mlt_suites[mlt_current_suite_idx].name); \
-//	strncpy(mlt_suites[mlt_current_suite_idx].name, name, strlen(name) > MLT_MAX_SUITE_NAME-1 ? MLT_MAX_SUITE_NAME-1 : strlen(name)); \
-
 #define mlt_suite_begin(name) do { \
 	if (mlt_total_suites >= MLT_MAX_SUITES) { \
 		fprintf(stderr, "Error: Maximum number of test suites exceeded\n"); \
@@ -129,5 +127,3 @@ struct timeval mlt_init_t, mlt_subinit_t, mlt_end_t, mlt_subend_t;
 
 #define mlt_streq(in, str) mlt_assert(strncmp(in, str, strlen(in)) == 0)
 #define mlt_strneq(in, str) mlt_assert(strncmp(in, str, strlen(in)))
-
-#endif
