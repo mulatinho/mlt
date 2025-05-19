@@ -1,7 +1,8 @@
 CC=gcc
 HEADERS=-I./
+WARNINGS=-W -Wno-implicit-function-declaration
 SRC=$(wildcard tests/*.c)
-CFLAGS=-W -Wno-implicit-function-declaration -O2 -ansi -std=c99 $(HEADERS)
+CFLAGS=$(WARNINGS) -O2 -ansi -std=c99 $(HEADERS)
 LDLIBS=-lm
 TESTS=tests/example1 tests/example2 tests/suite
 ITESTS=tests/interactive-test
@@ -35,7 +36,7 @@ format:
 	clang-format --verbose -i $(SRC)
 
 lint:
-	clang-tidy $(SRC) -- -std=c99 $(HEADERS)
+	clang-tidy $(SRC) -- -std=c99 $(HEADERS) $(WARNINGS)
 
 install:
 	install -m 0644 mlt.h /usr/local/include/
