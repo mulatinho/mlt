@@ -6,7 +6,7 @@ double calc(double number, double n)
 {
 	double sum = 0.0;
 
-	for (double x = 0.0; x < n; x++) {
+	for (int x = 0; x < (int)n; x++) {
 		sum += pow(number, x);
 		printf("%.2f ", pow(number, x));
 	}

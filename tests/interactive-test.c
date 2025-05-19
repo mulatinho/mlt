@@ -1,6 +1,4 @@
 #include "mlt.h"
-#include <unistd.h>
-#include <stdlib.h>
 
 int random_int(int n)
 {
