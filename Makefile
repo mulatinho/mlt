@@ -1,7 +1,7 @@
 CC=gcc
 HEADERS=-I./
 SRC=$(wildcard tests/*.c)
-CFLAGS=-W -O2 $(HEADERS)
+CFLAGS=-W -Wno-implicit-function-declaration -O2 -ansi -std=c99 $(HEADERS)
 LDLIBS=-lm
 TESTS=tests/example1 tests/example2 tests/suite
 ITESTS=tests/interactive-test
