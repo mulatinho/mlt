@@ -6,20 +6,42 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  lint:
     runs-on: [ "ubuntu-latest" ]
+    env:
+      REPO_NAME: ${{ github.event.repository.name }}
+    container:
+      image: mulatinho/build-c:alpine
+      volumes: 
+        - /__w/${REPO_NAME}/${REPO_NAME}:/app
+
     steps:
-      - uses: actions/checkout@v4
-      - uses: coursier/cache-action@v6.4
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver: docker
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: List contents
+        run: ls -lah /app
+
       - name: build
-        run: |-
-          docker run -v ./:/app/ mulatinho/build-c:alpine make
+        run: make lint
+  build:
+    runs-on: [ "ubuntu-latest" ]
+    env:
+      REPO_NAME: ${{ github.event.repository.name }}
+    container:
+      image: mulatinho/build-c:alpine
+      volumes: 
+        - /__w/${REPO_NAME}/${REPO_NAME}:/app
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
+
+      - name: List contents
+        run: ls -lah /app
+
+      - name: build
+        run: make
+
       - name: test
-        run: |-
-          docker run -t -v ./:/app/ mulatinho/build-c:alpine make test
-        env:
-          TOKEN: ${{ secrets.PAT_DOCKER }}
+        run: make test
