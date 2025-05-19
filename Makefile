@@ -1,11 +1,21 @@
 CC=gcc
-CFLAGS=-I ./ -W -O2
+HEADERS=-I./
+SRC=$(wildcard tests/*.c)
+CFLAGS=-W -O2 $(HEADERS)
 LDLIBS=-lm
 TESTS=tests/example1 tests/example2 tests/suite
 ITESTS=tests/interactive-test
 DTESTS=tests/inout-powertest
 
 all: $(TESTS) $(ITESTS) $(DTESTS)
+
+clean:
+	@rm -fv $(TESTS) $(ITESTS) $(DTESTS) 
+	@rm -fv tests/*.out
+	@rm -fv tests/*.log
+	@rm -rfv tests/*dSYM
+
+rebuild: clean all
 
 test:
 	@for test in $(TESTS); do \
@@ -21,11 +31,11 @@ test:
 			echo "result: fail,     '$$test.out' and '$$test.chk' are different.") | tee -a $$test.log; \
 	done
 
-clean:
-	@rm -fv $(TESTS) $(ITESTS) $(DTESTS) 
-	@rm -fv tests/*.out
-	@rm -fv tests/*.log
-	@rm -rfv tests/*dSYM
+format:
+	clang-format --verbose -i $(SRC)
+
+lint:
+	clang-tidy $(SRC) -- -std=c99 $(HEADERS)
 
 install:
 	install -m 0644 mlt.h /usr/local/include/
