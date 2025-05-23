@@ -1,4 +1,7 @@
 # MLT - Minimalist Lightweight Testing for C
+[![License](https://img.shields.io/badge/license-GPLv2-blue.svg)](LICENSE)
+[![Contributions Welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg)](README.md#Contributing)
+![GH Action Build Status](https://github.com/mulatinho/mlt/actions/workflows/build.yaml/badge.svg)
 
 **mlt.h** is a simple, header-only C testing framework designed for expressive, colorful, and minimal test suites.  
 It is ideal for small projects, CI scripts, and educational purposes.
