@@ -22,6 +22,9 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
+#include <ctype.h>
+#include <regex.h>
+#include <errno.h>
 
 #ifndef MLT_H
 #define MLT_TESTING 1
@@ -179,7 +182,7 @@ static struct timeval mlt_init_t = {0}, mlt_end_t = {0}, mlt_subinit_t = {0}, ml
 
 /* Regex Utilities */
 #define mlt_regex_compile(pattern, regex_ptr) \
-    regcompmlt_(regex_ptr, pattern, REG_EXTENDED)
+    regcomp(regex_ptr, pattern, REG_EXTENDED)
 
 #define mlt_regex_exec(regex_ptr, text) \
     regexec(regex_ptr, text, 0, NULL, 0)
