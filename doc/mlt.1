@@ -1,81 +1,182 @@
-.TH MLT 1 "April 2024" "MLT Testing Framework" "User Commands"
+.TH MLT 1 "May 2025" "MLT Test Framework" "User Commands"
 .SH NAME
-mlt \- A lightweight testing framework for C programs
+mlt.h \- Minimalist Lightweight Testing macros for C
+
 .SH SYNOPSIS
 .B #include <mlt.h>
-.PP
-.B cc
-.I program.c
-.B \-I/path/to/mlt
+
 .SH DESCRIPTION
-.B mlt
-is a simple and lightweight testing framework for C programs that provides test suite organization, timing measurements, and colorized output.
+The \fBmlt.h\fP header provides a set of macros and utilities for writing simple, expressive, and colorful test suites in C. It is designed for minimal dependencies and easy integration into C projects.
+
+.SH FEATURES
+.TP
+\- Colorful output for test results and summaries
+.TP
+\- Suite grouping and timing
+.TP
+\- Assertion macros for integers and strings
+.TP
+\- Array and string utilities
+.TP
+\- Sorting helpers for arrays and structs
+.TP
+\- Regex helpers (wrappers for POSIX regex)
+.TP
+\- No external dependencies except libc
+
 .SH MACROS
+
+.SS Test Suite Control
 .TP
 .B mlt_start()
-Initialize the test session and print the start time.
+Initialize the test session, print a header, and reset counters.
+
 .TP
 .B mlt_finish()
-Complete the test session, print summary statistics and return the test result.
+Print a summary of all test suites and results, including elapsed time.
+
 .TP
-.B mlt_suite_begin(name)
-Start a new test suite with the given name. Maximum suite name length is 64 characters.
+.B mlt_suite_begin(suite_name)
+Begin a new test suite with the given name.
+
 .TP
 .B mlt_suite_end()
-Complete the current test suite and record its execution time.
+End the current test suite and record its elapsed time.
+
+.SS Assertions
 .TP
-.B mlt_assert(test)
-Assert that a test condition is true. Records success/failure and prints debug information.
+.B mlt_assert(expr)
+Assert that \fBexpr\fP is true. Prints PASS/FAIL and updates counters.
+
 .TP
-.B mlt_streq(in, str)
-Assert that two strings are equal.
+.B mlt_streq(a, b)
+Assert that strings \fBa\fP and \fBb\fP are equal (prefix match).
+
 .TP
-.B mlt_strneq(in, str)
-Assert that two strings are not equal.
-.SH OUTPUT FORMAT
-Test results are displayed with the following indicators:
+.B mlt_strneq(a, b)
+Assert that strings \fBa\fP and \fBb\fP are not equal (prefix match).
+
+.SS String Utilities
 .TP
-.B [ OK]
-Test passed successfully (shown in green)
+.B mlt_strupper(str)
+Convert \fBstr\fP to uppercase in-place.
+
 .TP
-.B [ERR]
-Test failed (shown in red)
-.PP
-Each test suite's results include:
-.IP \[bu] 2
-Total number of tests run
-.IP \[bu]
-Number of tests passed
-.IP \[bu]
-Number of tests failed
-.IP \[bu]
-Execution time
-.SH EXAMPLE
+.B mlt_strlower(str)
+Convert \fBstr\fP to lowercase in-place.
+
+.TP
+.B mlt_strcontains(str, substr)
+Returns 1 if \fBsubstr\fP is found in \fBstr\fP, 0 otherwise.
+
+.TP
+.B mlt_strpaste(a, b)
+Concatenate tokens \fBa\fP and \fBb\fP.
+
+.TP
+.B mlt_stringify(a)
+Stringify the token \fBa\fP.
+
+.SS Array Utilities
+.TP
+.B mlt_arr_len(arr)
+Return the number of elements in \fBarr\fP.
+
+.TP
+.B mlt_print_int_arr(arr, n)
+Print an array of \fBint\fP of length \fBn\fP.
+
+.TP
+.B mlt_print_float_arr(arr, n)
+Print an array of \fBfloat\fP of length \fBn\fP.
+
+.TP
+.B mlt_print_double_arr(arr, n)
+Print an array of \fBdouble\fP of length \fBn\fP.
+
+.TP
+.B mlt_print_str_arr(arr, n)
+Print an array of strings of length \fBn\fP.
+
+.SS Sorting Utilities
+.TP
+.B mlt_define_comparision(type, name, expr)
+Define a comparison function for \fBqsort\fP for the given \fBtype\fP and \fBexpr\fP.
+
+.TP
+.B mlt_define_compare_str(name)
+Define a string comparison function for \fBqsort\fP.
+
+.TP
+.B mlt_define_compare_struct(type, field, name)
+Define a struct field comparison function for \fBqsort\fP.
+
+.SS Regex Utilities
+.TP
+.B mlt_regex_compile(pattern, regex_ptr)
+Compile a POSIX regex.
+
+.TP
+.B mlt_regex_exec(regex_ptr, text)
+Execute a regex match.
+
+.TP
+.B mlt_regex_exec_match(regex_ptr, text, nmatch, pmatch)
+Execute a regex match with submatches.
+
+.TP
+.B mlt_regex_free(regex_ptr)
+Free a compiled regex.
+
+.SS Debugging
+.TP
+.B mlt_debug(...)
+Print debug output to stderr.
+
+.SS Timing
+.TP
+.B mlt_time_init()
+Initialize a timer for a test suite.
+
+.TP
+.B mlt_time_calc(end, ini)
+Calculate elapsed time in seconds (as double) between two \fBstruct timeval\fP.
+
+.SH EXAMPLES
+
 .nf
-#include <mlt.h>
+#include "mlt.h"
 
 int main(void) {
     mlt_start();
 
-    mlt_suite_begin("String Tests");
-    mlt_assert(strlen("test") == 4);
-    mlt_streq("hello", "hello");
+    mlt_suite_begin("math");
+    mlt_assert(2 + 2 == 4);
+    mlt_assert(6 / 2 == 3);
     mlt_suite_end();
 
-    mlt_finish();
-    return 0;
+    mlt_suite_begin("strings");
+    char foo[] = "foo";
+    char bar[] = "foobar";
+    mlt_streq(bar, "foo");
+    mlt_strupper(foo);
+    mlt_assert(strcmp(foo, "FOO") == 0);
+    mlt_suite_end();
+
+    return mlt_finish();
 }
 .fi
-.SH LIMITS
-.IP \[bu] 2
-Maximum number of test suites: 16
-.IP \[bu]
-Maximum suite name length: 64 characters
+
 .SH AUTHOR
-Written by Alexandre Mulatinho <alex@mulatinho.net>
-.SH BUGS
-Report bugs to https://github.com/mulatinho/mlt/issues
-.SH COPYRIGHT
-Copyright \(co 2015 Alexandre Mulatinho.
-.PP
-This is free software; you can redistribute it and/or modify it under the terms of the GNU Lesser General Public License as published by the Free Software Foundation; either version 2.1 of the License, or (at your option) any later version.
+Alexandre Mulatinho <alex@mulatinho.net>
+
+.SH LICENSE
+GNU Lesser General Public License v2.1 or later
+
+.SH SEE ALSO
+.BR assert (3),
+.BR qsort (3),
+.BR regcomp (3),
+.BR regexec (3)
+
+
